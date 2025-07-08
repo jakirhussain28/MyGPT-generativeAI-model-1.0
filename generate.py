@@ -1,7 +1,7 @@
 import torch
 from model import GPT, GPTConfig
 
-# === Load Data and Char Mappings ===
+# Load Data and Char Mappings
 with open("testing/conversations_5k.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
@@ -13,7 +13,7 @@ itos = { i:ch for i,ch in enumerate(chars) }
 def encode(s): return [stoi.get(c, 0) for c in s]  # default to 0 for unknown
 def decode(l): return ''.join([itos[i] for i in l])
 
-# === Load Model ===
+# Load Model
 config = GPTConfig()
 config.vocab_size = vocab_size
 config.block_size = 128
@@ -21,7 +21,7 @@ model = GPT(config)
 model.load_state_dict(torch.load("my-gpt.pth", map_location='cpu'))
 model.eval()
 
-# === User Prompt + Generation ===
+# User Prompt + Generation
 while True:
     user_input = input("\n💬 Enter your message: ").strip()
     if user_input.lower() in {"exit", "quit"}:
