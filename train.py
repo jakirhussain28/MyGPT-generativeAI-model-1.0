@@ -2,11 +2,11 @@ import torch
 import torch.nn.functional as F
 from model import GPT, GPTConfig
 
-# === Load Data ===
+#Load Data
 with open("testing/conversations_5k.txt", "r", encoding="utf-8") as f:
     text = f.read()
 
-# === Tokenizer ===
+#Tokenizer
 chars = sorted(list(set(text)))
 vocab_size = len(chars)
 stoi = { ch:i for i,ch in enumerate(chars) }
@@ -19,7 +19,7 @@ data = torch.tensor(encode(text), dtype=torch.long)
 n = int(0.9 * len(data))
 train_data, val_data = data[:n], data[n:]
 
-# === Hyperparameters ===
+#Hyperparameters
 block_size = 128
 batch_size = 32
 learning_rate = 1e-3
@@ -34,7 +34,7 @@ def get_batch(split):
     y = torch.stack([data_split[i+1:i+block_size+1] for i in ix])
     return x.to(device), y.to(device)
 
-# === Model ===
+#Model
 config = GPTConfig()
 config.vocab_size = vocab_size
 config.block_size = block_size
@@ -42,7 +42,7 @@ model = GPT(config).to(device)
 
 optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
 
-# === Training Loop ===
+#Training Loop
 for step in range(max_iters):
     model.train()
     xb, yb = get_batch("train")
@@ -57,7 +57,7 @@ for step in range(max_iters):
             _, val_loss = model(*get_batch("val"))
         print(f"Step {step}: train loss {loss.item():.4f}, val loss {val_loss.item():.4f}")
 
-# === Save Model and Generate Sample ===
+#Save Model and Generate Sample
 torch.save(model.state_dict(), "my-gpt.pth")
 
 context = torch.tensor([stoi['H']], dtype=torch.long).unsqueeze(0).to(device)
